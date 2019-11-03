@@ -1,32 +1,98 @@
-import { Component } from '@angular/core';
+import { Component, AfterViewInit, ViewChild } from '@angular/core';
+import { MatTableDataSource } from '@angular/material/table';
+import { MatSort } from '@angular/material/sort';
+
+import GetSheet from 'get-sheet-done';
 
 @Component({
   selector: 'app-root',
-  template: `
-    <!--The content below is only a placeholder and can be replaced.-->
-    <div style="text-align:center" class="content">
-      <h1>
-        Welcome to {{title}}!
-      </h1>
-      <span style="display: block">{{ title }} app is running!</span>
-      <img width="300" alt="Angular Logo" src="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNTAgMjUwIj4KICAgIDxwYXRoIGZpbGw9IiNERDAwMzEiIGQ9Ik0xMjUgMzBMMzEuOSA2My4ybDE0LjIgMTIzLjFMMTI1IDIzMGw3OC45LTQzLjcgMTQuMi0xMjMuMXoiIC8+CiAgICA8cGF0aCBmaWxsPSIjQzMwMDJGIiBkPSJNMTI1IDMwdjIyLjItLjFWMjMwbDc4LjktNDMuNyAxNC4yLTEyMy4xTDEyNSAzMHoiIC8+CiAgICA8cGF0aCAgZmlsbD0iI0ZGRkZGRiIgZD0iTTEyNSA1Mi4xTDY2LjggMTgyLjZoMjEuN2wxMS43LTI5LjJoNDkuNGwxMS43IDI5LjJIMTgzTDEyNSA1Mi4xem0xNyA4My4zaC0zNGwxNy00MC45IDE3IDQwLjl6IiAvPgogIDwvc3ZnPg==">
-    </div>
-    <h2>Here are some links to help you start: </h2>
-    <ul>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://angular.io/tutorial">Tour of Heroes</a></h2>
-      </li>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://angular.io/cli">CLI Documentation</a></h2>
-      </li>
-      <li>
-        <h2><a target="_blank" rel="noopener" href="https://blog.angular.io/">Angular blog</a></h2>
-      </li>
-    </ul>
-    
-  `,
-  styles: []
+  templateUrl: './app.component.html',
+  styleUrls: ['./app.component.scss']
 })
-export class AppComponent {
-  title = 'toproot';
+export class AppComponent implements AfterViewInit {
+  
+  @ViewChild(MatSort, { static: false }) sort: MatSort;
+
+  public isLoading = true;
+  public dataSource = new MatTableDataSource();
+
+  private ssKey = '1yf1kZLdlWCSBdiROvzjIZt2Zay9ec7BzyIbdybI5NE4';
+  private ssSheetId = 3;
+
+  public headers = ['Birds', 'Cats', 'Mice', 'Lizards', 'Otters', 'Moles', 'Crows', 'Vagabond1', 'Vagabond2'];
+  public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Winner Last', 'Keep Clearing', '# Players'])
+  public dataSet: any[] = [];
+  public currentDataSet: any[] = [];
+
+  public filters: Array<{ name: string, filter: (x) => boolean, color: string, isActive?: boolean }> = [
+    { name: 'Has Birds', filter: x => x['Birds'], color: 'accent' },
+    { name: 'No Birds', filter: x => !x['Birds'], color: 'warn' },
+    { name: 'Has Cats', filter: x => x['Cats'], color: 'accent' },
+    { name: 'No Cats', filter: x => !x['Cats'], color: 'warn' },
+    { name: 'Has Mice', filter: x => x['Mice'], color: 'accent' },
+    { name: 'No Mice', filter: x => !x['Mice'], color: 'warn' },
+    { name: 'Has Lizards', filter: x => x['Lizards'], color: 'accent' },
+    { name: 'No Lizards', filter: x => !x['Lizards'], color: 'warn' },
+    { name: 'Has Otters', filter: x => x['Otters'], color: 'accent' },
+    { name: 'No Otters', filter: x => !x['Otters'], color: 'warn' },
+    { name: 'Has Moles', filter: x => x['Moles'], color: 'accent' },
+    { name: 'No Moles', filter: x => !x['Moles'], color: 'warn' },
+    { name: 'Has Crows', filter: x => x['Crows'], color: 'accent' },
+    { name: 'No Crows', filter: x => !x['Crows'], color: 'warn' },
+    { name: 'Has 1 Vagabond', filter: x => x['Vagabond1'], color: 'accent' },
+    { name: 'Has 2 Vagabonds', filter: x => x['Vagabond2'], color: 'accent' },
+    { name: 'No Vagabond', filter: x => !x['Vagabond1'], color: 'warn' },
+    { name: 'Dominance (Lost)', filter: x => Object.values(x).find(x => x === 'Dom'), color: 'primary' },
+    { name: 'Dominance (Won)', filter: x => Object.values(x).find(x => x === 'WDom'), color: 'primary' },
+  ];
+
+  public currentFilter = null;
+  public activeFilters = [];
+
+  async ngAfterViewInit() {
+
+    const { data } = await GetSheet.raw(this.ssKey, this.ssSheetId);
+    this.isLoading = false;
+
+    this.dataSet = data
+      .slice(11)
+      .filter(arr => arr.filter(x => x && x.trim()).length > 0)
+      .map(arr => arr.reduce((prev, cur, idx) => ({ [this.expandedHeaders[idx]]: cur, ...prev }), {}));
+
+    this.refreshData(0);
+
+    setTimeout(() => {
+      this.dataSource.sort = this.sort;
+    }, 0);
+  }
+
+  public changePage($event) {
+    this.refreshData($event.pageIndex);
+  }
+
+  public refreshData(page: number) {
+
+    let dataSet = this.dataSet;
+    this.filters.forEach(filter => {
+      if(!filter.isActive) return;
+
+      dataSet = dataSet.filter(x => filter.filter(x));
+    });
+    
+    this.currentDataSet = dataSet;
+
+    this.dataSource.data = dataSet.slice(page * 25, (page + 1) * 25);
+  }
+
+  public addFilter($event) {
+    if(!$event.value) return;
+
+    $event.value.isActive = true;
+    this.refreshData(0);
+  }
+  
+  public removeFilter(filter) {
+    filter.isActive = false;
+    this.refreshData(0);
+  }
 }

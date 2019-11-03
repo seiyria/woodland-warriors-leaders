@@ -1,0 +1,27 @@
+
+.loading-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+}
+
+.filter-container {
+  min-height: calc(25vh - 64px);
+  overflow: auto;
+
+  padding: 10px;
+  padding-left: 20px;
+  padding-right: 20px;
+
+  .filter-button {
+    margin-left: 10px;
+  }
+}
+
+.table-container {
+  min-height: calc(75vh - 64px);
+  max-height: calc(75vh - 64px);
+  overflow: auto;
+}

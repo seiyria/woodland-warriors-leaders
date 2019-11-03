@@ -1,0 +1,51 @@
+<mat-toolbar color="primary">
+  <span>Woodland Warriors Games</span>
+</mat-toolbar>
+
+<div class="loading-container" *ngIf="isLoading">
+  <mat-progress-spinner mode="indeterminate"></mat-progress-spinner>
+</div>
+
+<div class="filter-container">
+  <div class="filter-select">
+    <mat-form-field>
+      <mat-label>Add a Filter</mat-label>
+      <mat-select #select>
+        <ng-container *ngFor="let filter of filters">
+          <mat-option *ngIf="!filter.isActive" [value]="filter">
+            {{ filter.name }}
+          </mat-option>
+        </ng-container>
+      </mat-select>
+    </mat-form-field>
+
+    <button class="filter-button" mat-raised-button color="primary" (click)="addFilter(select)" [disabled]="!select.value">Add Filter</button>
+
+    <div class="filter-chips">
+      <mat-chip-list>
+        <ng-container *ngFor="let filter of filters">
+          <mat-chip *ngIf="filter.isActive" [color]="filter.color" selected>
+            {{ filter.name }}
+            <mat-icon matChipRemove (click)="removeFilter(filter)">cancel</mat-icon>
+          </mat-chip>
+        </ng-container>
+      </mat-chip-list>
+    </div>
+  </div>
+</div>
+
+<div class="table-container">
+  <mat-table [dataSource]="dataSource" matSort *ngIf="!isLoading">
+  
+    <ng-container [matColumnDef]="header" *ngFor="let header of headers">
+      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ header }}</mat-header-cell>
+      <mat-cell *matCellDef="let element">{{ element[header] }}</mat-cell>
+    </ng-container>
+  
+    <mat-header-row *matHeaderRowDef="headers; sticky: true"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: headers;"></mat-row>
+    
+  </mat-table>
+</div>
+
+<mat-paginator [length]="currentDataSet.length" [pageSize]="25" (page)="changePage($event)"></mat-paginator>
