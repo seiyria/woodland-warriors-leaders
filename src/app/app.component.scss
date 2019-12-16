@@ -18,11 +18,15 @@
     margin-left: 10px;
   }
 
+  .filter-chips {
+    min-height: 40px;
+  }
+
   flex-grow: 1;
 }
 
 .table-container {
-  max-height: calc(75vh - 64px);
+  max-height: calc(75vh - 64px - 120px + 56px);
   overflow: auto;
   flex: 1;
 }

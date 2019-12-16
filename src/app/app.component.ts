@@ -13,6 +13,9 @@ export class AppComponent implements AfterViewInit {
   
   @ViewChild(MatSort, { static: false }) sort: MatSort;
 
+  public wins: { [key: string]: number } = {};
+  public winPercents: { [key: string]: string } = {};
+
   public isLoading = true;
   public dataSource = new MatTableDataSource();
 
@@ -60,6 +63,7 @@ export class AppComponent implements AfterViewInit {
       .map(arr => arr.reduce((prev, cur, idx) => ({ [this.expandedHeaders[idx]]: cur, ...prev }), {}));
 
     this.refreshData(0);
+    this.recalculateWinPercent();
 
     setTimeout(() => {
       this.dataSource.sort = this.sort;
@@ -89,10 +93,35 @@ export class AppComponent implements AfterViewInit {
 
     $event.value.isActive = true;
     this.refreshData(0);
+    this.recalculateWinPercent();
   }
   
   public removeFilter(filter) {
     filter.isActive = false;
     this.refreshData(0);
+    this.recalculateWinPercent();
+  }
+
+  public recalculateWinPercent() {
+    this.wins = {};
+    this.winPercents = {};
+
+    this.headers.forEach(faction => {
+      this.wins[faction] = 0;
+      this.winPercents[faction] = '0.00';
+    });
+
+    this.currentDataSet.forEach(item => {
+
+      this.headers.forEach(faction => {
+        if(!item[faction] || (item[faction] !== 'WDom' && +item[faction] < 30)) return;
+        this.wins[faction] = this.wins[faction] || 0;
+        this.wins[faction]++;
+      });
+    });
+
+    this.headers.forEach(faction => {
+      this.winPercents[faction] = (this.wins[faction] / this.currentDataSet.length * 100).toFixed(2);
+    });
   }
 }
