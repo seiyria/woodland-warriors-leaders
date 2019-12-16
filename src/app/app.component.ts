@@ -47,6 +47,11 @@ export class AppComponent implements AfterViewInit {
     { name: 'No Vagabond', filter: x => !x['Vagabond1'], color: 'warn' },
     { name: 'Dominance (Lost)', filter: x => Object.values(x).find(x => x === 'Dom'), color: 'primary' },
     { name: 'Dominance (Won)', filter: x => Object.values(x).find(x => x === 'WDom'), color: 'primary' },
+    { name: '2 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 2, color: 'primary' },
+    { name: '3 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 3, color: 'primary' },
+    { name: '4 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 4, color: 'primary' },
+    { name: '5 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 5, color: 'primary' },
+    { name: '6 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 6, color: 'primary' }
   ];
 
   public currentFilter = null;
