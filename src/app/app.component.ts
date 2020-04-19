@@ -23,7 +23,7 @@ export class AppComponent implements AfterViewInit {
   private ssSheetId = 3;
 
   public headers = ['Birds', 'Cats', 'Mice', 'Lizards', 'Otters', 'Moles', 'Crows', 'Vagabond1', 'Vagabond2'];
-  public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Winner Last', 'Keep Clearing', '# Players'])
+  public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Winner Last', 'Keep Clearing', '# Players', 'Deck'])
   public dataSet: any[] = [];
   public currentDataSet: any[] = [];
 
@@ -47,6 +47,8 @@ export class AppComponent implements AfterViewInit {
     { name: 'No Vagabond', filter: x => !x['Vagabond1'], color: 'warn' },
     { name: 'Dominance (Lost)', filter: x => Object.values(x).find(x => x === 'Dom'), color: 'primary' },
     { name: 'Dominance (Won)', filter: x => Object.values(x).find(x => x === 'WDom'), color: 'primary' },
+    { name: 'Base Deck', filter: x => x['Deck'] === 'Base', color: 'primary' },
+    { name: 'Exiles & Partisans Deck', filter: x => x['Deck'] === 'E&P', color: 'primary' },
     { name: '2 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 2, color: 'primary' },
     { name: '3 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 3, color: 'primary' },
     { name: '4 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 4, color: 'primary' },
