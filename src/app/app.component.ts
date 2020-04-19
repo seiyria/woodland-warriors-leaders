@@ -55,7 +55,7 @@ export class AppComponent implements AfterViewInit {
     { name: 'Mountain Map', filter: x => x['Map'] === 'Mountain', color: 'accent' },
     { name: 'Newbies (1-2 GPP)', filter: x => x['Experience'] === 'Very Low (1-2 GPP)', color: 'accent' },
     { name: 'Low Experience (3-5 GPP)', filter: x => x['Experience'] === 'Low (3-5 GPP)', color: 'accent' },
-    { name: 'Moderate Experience (6-10 GPP)', filter: x => x['Experience'] === 'Moderate Experience (6-10 GPP)', color: 'accent' },
+    { name: 'Moderate Experience (6-10 GPP)', filter: x => x['Experience'] === 'Moderate (6-10 GPP)', color: 'accent' },
     { name: 'High Experience (11-20 GPP)', filter: x => x['Experience'] === 'High (11-20 GPP)', color: 'accent' },
     { name: 'Experts (21+ GPP)', filter: x => x['Experience'] === 'Very High (21+ GPP)', color: 'accent' },
     { name: '2 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 2, color: 'primary' },
