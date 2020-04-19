@@ -121,7 +121,8 @@ export class AppComponent implements AfterViewInit {
     this.currentDataSet.forEach(item => {
 
       this.headers.forEach(faction => {
-        if(!item[faction] || (item[faction] !== 'WDom' && +item[faction] < 30)) return;
+        if(!item[faction] || item[faction] === 'Dom' || (item[faction] !== 'WDom' && +item[faction] < 30)) return;
+
         this.wins[faction] = this.wins[faction] || 0;
         this.wins[faction]++;
       });
