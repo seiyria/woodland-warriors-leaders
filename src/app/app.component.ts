@@ -1,8 +1,11 @@
-import { Component, AfterViewInit, ViewChild } from '@angular/core';
+import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { FormControl } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
+import { map, startWith } from 'rxjs/operators';
 
 import GetSheet from 'get-sheet-done';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-root',
@@ -12,6 +15,12 @@ import GetSheet from 'get-sheet-done';
 export class AppComponent implements AfterViewInit {
   
   @ViewChild(MatSort, { static: false }) sort: MatSort;
+
+  @ViewChild('filterInput', { static: false }) public filterInput: ElementRef<HTMLInputElement>;
+  public currentFilter = null;
+  public filterCtrl = new FormControl();
+  public chosenFilters = [];
+  public filteredFilters: Observable<any[]>;
 
   public wins: { [key: string]: number } = {};
   public winPercents: { [key: string]: string } = {};
@@ -26,6 +35,10 @@ export class AppComponent implements AfterViewInit {
   public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Winner Last', 'Keep Clearing', '# Players', 'Deck'])
   public dataSet: any[] = [];
   public currentDataSet: any[] = [];
+
+  public get activeFilters() {
+    return this.filters.filter(x => x.isActive);
+  }
 
   public filters: Array<{ name: string, filter: (x) => boolean, color: string, isActive?: boolean }> = [
     { name: 'Has Birds', filter: x => x['Birds'], color: 'accent' },
@@ -65,10 +78,13 @@ export class AppComponent implements AfterViewInit {
     { name: '6 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 6, color: 'primary' }
   ];
 
-  public currentFilter = null;
-  public activeFilters = [];
-
   async ngAfterViewInit() {
+    
+    this.filteredFilters = this.filterCtrl.valueChanges.pipe(
+      startWith(null),
+
+      // sometimes the filter object gets in here instead of the string
+      map((filter) => filter && !filter.name ? this.filters.filter(x => x.name.toLowerCase().includes((filter || '').toLowerCase())) : this.filters.slice()));
 
     const { data } = await GetSheet.raw(this.ssKey, this.ssSheetId);
     this.isLoading = false;
@@ -105,9 +121,13 @@ export class AppComponent implements AfterViewInit {
   }
 
   public addFilter($event) {
-    if(!$event.value) return;
+    if(!$event || !$event.option || !$event.option.value) return;
 
-    $event.value.isActive = true;
+    this.filterInput.nativeElement.value = '';
+    this.filterCtrl.setValue(null);
+
+    const filter = $event.option.value;
+    filter.isActive = true;
     this.refreshData(0);
     this.recalculateWinPercent();
   }

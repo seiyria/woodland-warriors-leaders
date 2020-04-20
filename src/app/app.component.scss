@@ -1,4 +1,8 @@
 
+.hidden {
+  display: none;
+}
+
 .loading-container {
   display: flex;
   justify-content: center;
@@ -14,24 +18,33 @@
   padding-left: 20px;
   padding-right: 20px;
 
-  .filter-button {
-    margin-left: 10px;
+  mat-form-field {
+    width: 100%;
   }
-
-  .filter-chips {
-    min-height: 40px;
-  }
-
-  flex-grow: 1;
 }
 
 .table-container {
-  max-height: calc(75vh - 64px - 120px + 56px);
   overflow: auto;
-  flex: 1;
 }
 
 :host {
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 64px 150px auto 56px;
+  height: 100vh;
+}
+
+.mat-chip {
+  color: #fff;
+
+  &.mat-primary {
+    background-color: #7b1fa2;
+  }
+
+  &.mat-accent {
+    background-color: #008b00;
+  }
+
+  &.mat-warn {
+    background-color: #f44336;
+  }
 }

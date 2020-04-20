@@ -7,31 +7,35 @@
 </div>
 
 <div class="filter-container">
-  <div class="filter-select">
-    <mat-form-field>
-      <mat-label>Add a Filter</mat-label>
-      <mat-select #select>
-        <ng-container *ngFor="let filter of filters">
-          <mat-option *ngIf="!filter.isActive" [value]="filter">
-            {{ filter.name }}
-          </mat-option>
-        </ng-container>
-      </mat-select>
-    </mat-form-field>
+  <mat-form-field *ngIf="!isLoading" color="accent">
 
-    <button class="filter-button" mat-raised-button color="primary" (click)="addFilter(select)" [disabled]="!select.value">Add Filter</button>
+    <mat-chip-list #chipList>
 
-    <div class="filter-chips">
-      <mat-chip-list>
-        <ng-container *ngFor="let filter of filters">
-          <mat-chip *ngIf="filter.isActive" [color]="filter.color" selected>
-            {{ filter.name }}
-            <mat-icon matChipRemove (click)="removeFilter(filter)">cancel</mat-icon>
-          </mat-chip>
-        </ng-container>
-      </mat-chip-list>
-    </div>
-  </div>
+      <mat-chip
+        *ngFor="let filter of activeFilters"
+        [color]="filter.color"
+        selected="true"
+        (removed)="removeFilter(filter)">
+        {{ filter.name }}
+        <mat-icon matChipRemove (click)="removeFilter(filter)">cancel</mat-icon>
+      </mat-chip>
+
+      <input
+        placeholder="Add a filter"
+        #filterInput
+        [formControl]="filterCtrl"
+        [matAutocomplete]="auto"
+        [matChipInputFor]="chipList">
+    </mat-chip-list>
+
+    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="addFilter($event)">
+      <mat-option *ngFor="let filter of filteredFilters | async" [value]="filter" [class.hidden]="filter.isActive">
+        {{ filter.name }}
+      </mat-option>
+    </mat-autocomplete>
+
+  </mat-form-field>
+
 </div>
 
 <div class="table-container">
