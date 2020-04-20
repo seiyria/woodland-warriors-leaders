@@ -1,4 +1,5 @@
 import { Component, AfterViewInit, ViewChild, ElementRef } from '@angular/core';
+import { Router, ActivatedRoute } from '@angular/router';
 import { FormControl } from '@angular/forms';
 import { MatTableDataSource } from '@angular/material/table';
 import { MatSort } from '@angular/material/sort';
@@ -78,8 +79,24 @@ export class AppComponent implements AfterViewInit {
     { name: '6 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 6, color: 'primary' }
   ];
 
+  constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
+
   async ngAfterViewInit() {
-    
+
+    this.activatedRoute.queryParamMap.subscribe(x => {
+      if(!x || !(x as any).params || !(x as any).params.filters) return;
+
+      let filters: string[] = (x as any).params.filters;
+      if(!(filters instanceof Array)) filters = [filters];
+
+      filters.forEach(f => {
+        const filterRef = this.filters.find(filt => filt.name === f);
+        if(!filterRef) return;
+
+        filterRef.isActive = true;
+      });
+    });
+
     this.filteredFilters = this.filterCtrl.valueChanges.pipe(
       startWith(null),
 
@@ -120,6 +137,17 @@ export class AppComponent implements AfterViewInit {
     this.dataSource.data = dataSet.slice(page * 25, (page + 1) * 25);
   }
 
+  private reroute() {
+    this.router.navigate(
+      [],
+      {
+        relativeTo: this.activatedRoute,
+        queryParams: { filters: this.filters.filter(x => x.isActive).map(x => x.name) },
+        queryParamsHandling: 'merge'
+      }
+    )
+  }
+
   public addFilter($event) {
     if(!$event || !$event.option || !$event.option.value) return;
 
@@ -130,12 +158,16 @@ export class AppComponent implements AfterViewInit {
     filter.isActive = true;
     this.refreshData(0);
     this.recalculateWinPercent();
+
+    this.reroute();
   }
   
   public removeFilter(filter) {
     filter.isActive = false;
     this.refreshData(0);
     this.recalculateWinPercent();
+
+    this.reroute();
   }
 
   public recalculateWinPercent() {
