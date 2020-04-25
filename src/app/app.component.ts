@@ -33,7 +33,7 @@ export class AppComponent implements AfterViewInit {
   private ssSheetId = 3;
 
   public headers = ['Birds', 'Cats', 'Mice', 'Lizards', 'Otters', 'Moles', 'Crows', 'Vagabond1', 'Vagabond2'];
-  public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Winner Last', 'Keep Clearing', '# Players', 'Deck'])
+  public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Last Place Went Last', 'Keep Clearing', '# Players', 'Deck'])
   public dataSet: any[] = [];
   public currentDataSet: any[] = [];
 
