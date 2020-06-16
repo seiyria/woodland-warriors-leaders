@@ -30,7 +30,7 @@ export class AppComponent implements AfterViewInit {
   public dataSource = new MatTableDataSource();
 
   private ssKey = '1yf1kZLdlWCSBdiROvzjIZt2Zay9ec7BzyIbdybI5NE4';
-  private ssSheetId = 3;
+  private ssSheetId = 4;
 
   public headers = ['Birds', 'Cats', 'Mice', 'Lizards', 'Otters', 'Moles', 'Crows', 'Vagabond1', 'Vagabond2'];
   public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Winner Last', 'Keep Clearing', '# Players', 'Deck'])
@@ -107,7 +107,7 @@ export class AppComponent implements AfterViewInit {
     this.isLoading = false;
 
     this.dataSet = data
-      .slice(11)
+      .slice(8)
       .filter(arr => arr.filter(x => x && x.trim()).length > 0)
       .map(arr => arr.reduce((prev, cur, idx) => ({ [this.expandedHeaders[idx]]: cur, ...prev }), {}));
 
