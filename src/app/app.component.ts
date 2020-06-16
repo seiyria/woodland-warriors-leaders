@@ -33,7 +33,7 @@ export class AppComponent implements AfterViewInit {
   private ssSheetId = 4;
 
   public headers = ['Birds', 'Cats', 'Mice', 'Lizards', 'Otters', 'Moles', 'Crows', 'Vagabond1', 'Vagabond2'];
-  public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Winner Last', 'Keep Clearing', '# Players', 'Deck'])
+  public expandedHeaders = this.headers.concat(['Vagabond1 Type', 'Vagabond2 Type', 'Experience', 'Rounds', 'Winner', 'Map', 'Winner First', 'Last Place Went Last', 'Keep Clearing', '# Players', 'Deck'])
   public dataSet: any[] = [];
   public currentDataSet: any[] = [];
 
@@ -42,25 +42,21 @@ export class AppComponent implements AfterViewInit {
   }
 
   public filters: Array<{ name: string, filter: (x) => boolean, color: string, isActive?: boolean }> = [
-    { name: 'Has Birds', filter: x => x['Birds'], color: 'accent' },
-    { name: 'No Birds', filter: x => !x['Birds'], color: 'warn' },
-    { name: 'Has Cats', filter: x => x['Cats'], color: 'accent' },
-    { name: 'No Cats', filter: x => !x['Cats'], color: 'warn' },
-    { name: 'Has Mice', filter: x => x['Mice'], color: 'accent' },
-    { name: 'No Mice', filter: x => !x['Mice'], color: 'warn' },
-    { name: 'Has Lizards', filter: x => x['Lizards'], color: 'accent' },
-    { name: 'No Lizards', filter: x => !x['Lizards'], color: 'warn' },
-    { name: 'Has Otters', filter: x => x['Otters'], color: 'accent' },
-    { name: 'No Otters', filter: x => !x['Otters'], color: 'warn' },
-    { name: 'Has Moles', filter: x => x['Moles'], color: 'accent' },
-    { name: 'No Moles', filter: x => !x['Moles'], color: 'warn' },
-    { name: 'Has Crows', filter: x => x['Crows'], color: 'accent' },
-    { name: 'No Crows', filter: x => !x['Crows'], color: 'warn' },
+    ['Birds', 'Cats', 'Mice', 'Lizards', 'Otters', 'Moles', 'Crows']
+      .map(race => {
+        return [
+          { name: `Has ${race}`, filter: x => x[race], color: 'accent' },
+          { name: `No ${race}`, filter: x => !x[race], color: 'warn' },
+          { name: `${race} Victory`, filter: x => +x[race] === 30 || x[race] === 'WDom', color: 'primary' },
+        ];
+      }),
     { name: 'Has 1 Vagabond', filter: x => x['Vagabond1'], color: 'accent' },
     { name: 'Has 2 Vagabonds', filter: x => x['Vagabond2'], color: 'accent' },
     { name: 'No Vagabond', filter: x => !x['Vagabond1'], color: 'warn' },
+    { name: 'Vagabond Victory', filter: x => +x['Vagabond1'] === 30 || +x['Vagabond2'] === 30 || x['Vagabond1'] === 'WDom' || x['Vagabond2'] === 'WDom', color: 'warn' },
     { name: 'Dominance (Lost)', filter: x => Object.values(x).find(x => x === 'Dom'), color: 'primary' },
     { name: 'Dominance (Won)', filter: x => Object.values(x).find(x => x === 'WDom'), color: 'primary' },
+    { name: 'Winner Went First', filter: x => x['Winner First'] === 'Yes', color: 'warn' },
     { name: 'Base Deck', filter: x => x['Deck'] === 'Base', color: 'primary' },
     { name: 'Exiles & Partisans Deck', filter: x => x['Deck'] === 'E&P', color: 'primary' },
     { name: 'Autumn Map', filter: x => x['Map'] === 'Autumn', color: 'accent' },
@@ -77,7 +73,7 @@ export class AppComponent implements AfterViewInit {
     { name: '4 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 4, color: 'primary' },
     { name: '5 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 5, color: 'primary' },
     { name: '6 Players', filter: x => this.headers.reduce((prev, cur) => prev + (x[cur] ? 1 : 0), 0) === 6, color: 'primary' }
-  ];
+  ].flat(3);
 
   constructor(private router: Router, private activatedRoute: ActivatedRoute) {}
 
