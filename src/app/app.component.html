@@ -42,7 +42,7 @@
   <mat-table [dataSource]="dataSource" matSort *ngIf="!isLoading">
   
     <ng-container [matColumnDef]="header" *ngFor="let header of headers">
-      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ header }}<br>{{ wins[header] }}/{{ winPercents[header] }}%</mat-header-cell>
+      <mat-header-cell *matHeaderCellDef mat-sort-header>{{ header }}<br>{{ wins[header] }} Wins<br>{{ winPercents[header] }}% &#177; {{ deviations[header] }}%</mat-header-cell>
       <mat-cell *matCellDef="let element">{{ element[header] }}</mat-cell>
     </ng-container>
   

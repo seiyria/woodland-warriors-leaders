@@ -25,6 +25,7 @@ export class AppComponent implements AfterViewInit {
 
   public wins: { [key: string]: number } = {};
   public winPercents: { [key: string]: string } = {};
+  public deviations: { [key: string]: string } = {};
 
   public isLoading = true;
   public dataSource = new MatTableDataSource();
@@ -169,6 +170,7 @@ export class AppComponent implements AfterViewInit {
   public recalculateWinPercent() {
     this.wins = {};
     this.winPercents = {};
+    this.deviations = {};
 
     this.headers.forEach(faction => {
       this.wins[faction] = 0;
@@ -185,8 +187,12 @@ export class AppComponent implements AfterViewInit {
       });
     });
 
+    const totalGames = this.currentDataSet.length
     this.headers.forEach(faction => {
       this.winPercents[faction] = (this.wins[faction] / this.currentDataSet.length * 100).toFixed(2);
+
+      const factionWins = this.wins[faction];
+      this.deviations[faction] = (100 * (factionWins ? (1.96 * Math.sqrt((factionWins * (totalGames - factionWins)) / Math.pow(totalGames, 3))) : 0)).toFixed(2);
     });
   }
 }
